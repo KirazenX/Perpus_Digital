@@ -2,64 +2,73 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
+        'NamaLengkap',
+        'Alamat',
+        'is_active',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
-        'two_factor_secret',
-        'two_factor_recovery_codes',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'is_active' => 'boolean',
+    ];
+
+    public function isAdministrator(): bool
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->role === 'administrator';
     }
 
-    /**
-     * Get the user's initials
-     */
-    public function initials(): string
+    public function isPetugas(): bool
     {
-        return Str::of($this->name)
-            ->explode(' ')
-            ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
-            ->implode('');
+        return $this->role === 'petugas';
+    }
+
+    public function isPeminjam(): bool
+    {
+        return $this->role === 'peminjam';
+    }
+
+    public function isStaff(): bool
+    {
+        return in_array($this->role, ['administrator', 'petugas']);
+    }
+
+    public function peminjaman()
+    {
+        return $this->hasMany(Peminjaman::class, 'UserID');
+    }
+
+    public function koleksiPribadi()
+    {
+        return $this->hasMany(KoleksiPribadi::class, 'UserID');
+    }
+
+    public function ulasanBuku()
+    {
+        return $this->hasMany(UlasanBuku::class, 'UserID');
+    }
+
+    public function bukuKoleksi()
+    {
+        return $this->belongsToMany(Buku::class, 'koleksipribadi', 'UserID', 'BukuID')
+            ->withTimestamps();
     }
 }
