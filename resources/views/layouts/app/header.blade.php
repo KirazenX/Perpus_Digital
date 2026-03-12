@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
-        <flux:header container class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+    <body class="min-h-screen bg-white dark:bg-zinc-950 antialiased">
+        <flux:header container class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden mr-2" icon="bars-2" inset="left" />
 
             <x-app-logo href="{{ route('dashboard') }}" wire:navigate />
@@ -13,39 +13,40 @@
                 <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:navbar.item>
+                @auth
+                    @if(auth()->user()->isPeminjam())
+                        <flux:navbar.item icon="book-open" :href="route('buku.index')" :current="request()->routeIs('buku.*')" wire:navigate>
+                            {{ __('Katalog Buku') }}
+                        </flux:navbar.item>
+                        <flux:navbar.item icon="clipboard-document-list" :href="route('peminjaman.saya')" :current="request()->routeIs('peminjaman.saya')" wire:navigate>
+                            {{ __('Peminjaman Saya') }}
+                        </flux:navbar.item>
+                    @endif
+
+                    @if(auth()->user()->isStaff())
+                        <flux:navbar.item icon="book-open" :href="route('buku.index')" :current="request()->routeIs('buku.index')" wire:navigate>
+                            {{ __('Katalog Buku') }}
+                        </flux:navbar.item>
+                        <flux:navbar.item icon="pencil-square" :href="route('buku.create')" :current="request()->routeIs('buku.create')" wire:navigate>
+                            {{ __('Tambah Buku') }}
+                        </flux:navbar.item>
+                        <flux:navbar.item icon="clipboard-document-check" :href="route('peminjaman.manage')" :current="request()->routeIs('peminjaman.manage')" wire:navigate>
+                            {{ __('Kelola Peminjaman') }}
+                        </flux:navbar.item>
+                        <flux:navbar.item icon="chart-bar" :href="route('laporan.index')" :current="request()->routeIs('laporan.*')" wire:navigate>
+                            {{ __('Laporan') }}
+                        </flux:navbar.item>
+                    @endif
+                @endauth
             </flux:navbar>
 
             <flux:spacer />
-
-            <flux:navbar class="me-1.5 space-x-0.5 rtl:space-x-reverse py-0!">
-                <flux:tooltip :content="__('Search')" position="bottom">
-                    <flux:navbar.item class="!h-10 [&>div>svg]:size-5" icon="magnifying-glass" href="#" :label="__('Search')" />
-                </flux:tooltip>
-                <flux:tooltip :content="__('Repository')" position="bottom">
-                    <flux:navbar.item
-                        class="h-10 max-lg:hidden [&>div>svg]:size-5"
-                        icon="folder-git-2"
-                        href="https://github.com/laravel/livewire-starter-kit"
-                        target="_blank"
-                        :label="__('Repository')"
-                    />
-                </flux:tooltip>
-                <flux:tooltip :content="__('Documentation')" position="bottom">
-                    <flux:navbar.item
-                        class="h-10 max-lg:hidden [&>div>svg]:size-5"
-                        icon="book-open-text"
-                        href="https://laravel.com/docs/starter-kits#livewire"
-                        target="_blank"
-                        :label="__('Documentation')"
-                    />
-                </flux:tooltip>
-            </flux:navbar>
 
             <x-desktop-user-menu />
         </flux:header>
 
         <!-- Mobile Menu -->
-        <flux:sidebar collapsible="mobile" sticky class="lg:hidden border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+        <flux:sidebar collapsible="mobile" sticky class="lg:hidden border-e border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
             <flux:sidebar.header>
                 <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
                 <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2" />
@@ -56,18 +57,38 @@
                     <flux:sidebar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard')  }}
                     </flux:sidebar.item>
+                    @auth
+                        @if(auth()->user()->isPeminjam())
+                            <flux:sidebar.item icon="book-open" :href="route('buku.index')" :current="request()->routeIs('buku.*')" wire:navigate>
+                                {{ __('Katalog Buku') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="clipboard-document-list" :href="route('peminjaman.saya')" :current="request()->routeIs('peminjaman.saya')" wire:navigate>
+                                {{ __('Peminjaman Saya') }}
+                            </flux:sidebar.item>
+                        @endif
+
+                        @if(auth()->user()->isStaff())
+                            <flux:sidebar.item icon="book-open" :href="route('buku.index')" :current="request()->routeIs('buku.index')" wire:navigate>
+                                {{ __('Katalog Buku') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="pencil-square" :href="route('buku.create')" :current="request()->routeIs('buku.create')" wire:navigate>
+                                {{ __('Tambah Buku') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="clipboard-document-check" :href="route('peminjaman.manage')" :current="request()->routeIs('peminjaman.manage')" wire:navigate>
+                                {{ __('Kelola Peminjaman') }}
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="chart-bar" :href="route('laporan.index')" :current="request()->routeIs('laporan.*')" wire:navigate>
+                                {{ __('Laporan') }}
+                            </flux:sidebar.item>
+                        @endif
+
+                        @if(auth()->user()->isAdministrator())
+                            <flux:sidebar.item icon="users" :href="route('admin.pengguna')" :current="request()->routeIs('admin.*')" wire:navigate>
+                                {{ __('Manajemen Pengguna') }}
+                            </flux:sidebar.item>
+                        @endif
+                    @endauth
                 </flux:sidebar.group>
-            </flux:sidebar.nav>
-
-            <flux:spacer />
-
-            <flux:sidebar.nav>
-                <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    {{ __('Repository') }}
-                </flux:sidebar.item>
-                <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                    {{ __('Documentation') }}
-                </flux:sidebar.item>
             </flux:sidebar.nav>
         </flux:sidebar>
 

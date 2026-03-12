@@ -1,148 +1,159 @@
 <div>
+    <div class="mb-6">
+        <flux:button icon="arrow-left" variant="ghost" x-on:click="history.back()">Kembali</flux:button>
+    </div>
+
     @if(session('success'))
-        <div class="mb-4 rounded-lg bg-green-50 p-4 text-sm text-green-700">{{ session('success') }}</div>
+        <flux:callout variant="success" class="mb-6">{{ session('success') }}</flux:callout>
     @endif
     @if(session('error'))
-        <div class="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-700">{{ session('error') }}</div>
+        <flux:callout variant="danger" class="mb-6">{{ session('error') }}</flux:callout>
     @endif
 
-    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-3">
         {{-- Cover --}}
         <div class="lg:col-span-1">
-            <div class="overflow-hidden rounded-xl bg-gray-100 shadow ring-1 ring-gray-200">
+            <div class="overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-800 shadow-md ring-1 ring-zinc-200 dark:ring-zinc-700">
                 @if($buku->CoverImage)
                     <img src="{{ asset('storage/' . $buku->CoverImage) }}" alt="{{ $buku->Judul }}" class="w-full object-cover"/>
                 @else
-                    <div class="flex aspect-[3/4] items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100">
-                        <svg class="h-24 w-24 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-                        </svg>
+                    <div class="flex aspect-[3/4] items-center justify-center bg-linear-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                        <flux:icon name="book-open" class="size-24 text-indigo-200 dark:text-indigo-900" />
                     </div>
                 @endif
             </div>
 
             {{-- Actions --}}
-            <div class="mt-4 space-y-3">
+            <div class="mt-6 space-y-3">
                 @auth
                     @if(auth()->user()->isPeminjam())
                         @if($buku->isAvailable())
-                            <a href="{{ route('peminjaman.create', $buku->BukuID) }}"
-                               class="block w-full rounded-lg bg-indigo-600 py-2.5 text-center text-sm font-semibold text-white hover:bg-indigo-500">
+                            <flux:button href="{{ route('peminjaman.create', $buku->BukuID) }}" variant="primary" size="lg" class="w-full" wire:navigate>
                                 Pinjam Buku
-                            </a>
+                            </flux:button>
                         @else
-                            <button disabled class="block w-full rounded-lg bg-gray-300 py-2.5 text-center text-sm font-semibold text-gray-500 cursor-not-allowed">
+                            <flux:button disabled variant="filled" size="lg" class="w-full">
                                 Stok Habis
-                            </button>
+                            </flux:button>
                         @endif
                     @endif
-                    @if(auth()->user()->isPeminjam() || auth()->user()->isPeminjam())
-                        <button wire:click="toggleKoleksi"
-                                class="block w-full rounded-lg border {{ $isInKoleksi ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-300 bg-white text-gray-700' }} py-2.5 text-center text-sm font-semibold hover:bg-gray-50">
-                            {{ $isInKoleksi ? '★ Hapus dari Koleksi' : '☆ Simpan ke Koleksi' }}
-                        </button>
-                    @endif
+                    <flux:button wire:click="toggleKoleksi"
+                            variant="{{ $isInKoleksi ? 'filled' : 'outline' }}"
+                            size="lg"
+                            class="w-full"
+                            :icon="$isInKoleksi ? 'star' : 'star'"
+                    >
+                        {{ $isInKoleksi ? 'Hapus dari Koleksi' : 'Simpan ke Koleksi' }}
+                    </flux:button>
                 @else
-                    <a href="{{ route('login') }}"
-                       class="block w-full rounded-lg bg-indigo-600 py-2.5 text-center text-sm font-semibold text-white hover:bg-indigo-500">
+                    <flux:button href="{{ route('login') }}" variant="primary" size="lg" class="w-full">
                         Login untuk Meminjam
-                    </a>
+                    </flux:button>
                 @endauth
             </div>
         </div>
 
         {{-- Detail --}}
-        <div class="lg:col-span-2 space-y-6">
-            <div>
-                <div class="flex flex-wrap gap-2 mb-3">
+        <div class="lg:col-span-2 space-y-8">
+            <div class="space-y-4">
+                <div class="flex flex-wrap gap-2">
                     @foreach($buku->kategori as $kat)
-                        <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
+                        <flux:badge variant="neutral" size="sm" class="uppercase tracking-wide font-semibold">
                             {{ $kat->NamaKategori }}
-                        </span>
+                        </flux:badge>
                     @endforeach
                 </div>
-                <h1 class="text-2xl font-bold text-gray-900">{{ $buku->Judul }}</h1>
-                <p class="mt-1 text-lg text-gray-600">{{ $buku->Penulis }}</p>
+                
+                <flux:heading size="xl" class="text-3xl font-extrabold">{{ $buku->Judul }}</flux:heading>
+                <flux:text size="lg" class="text-zinc-600 dark:text-zinc-400">{{ $buku->Penulis }}</flux:text>
 
-                <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                    <div>
-                        <p class="text-xs text-gray-500">Penerbit</p>
-                        <p class="text-sm font-medium text-gray-900">{{ $buku->Penerbit }}</p>
+                <div class="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4 border-y border-zinc-100 dark:border-zinc-800 py-6">
+                    <div class="space-y-1">
+                        <flux:text size="xs" class="uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">Penerbit</flux:text>
+                        <flux:text class="font-medium text-zinc-900 dark:text-zinc-200">{{ $buku->Penerbit }}</flux:text>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-500">Tahun Terbit</p>
-                        <p class="text-sm font-medium text-gray-900">{{ $buku->TahunTerbit }}</p>
+                    <div class="space-y-1">
+                        <flux:text size="xs" class="uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">Tahun Terbit</flux:text>
+                        <flux:text class="font-medium text-zinc-900 dark:text-zinc-200">{{ $buku->TahunTerbit }}</flux:text>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-500">Stok Tersedia</p>
-                        <p class="text-sm font-medium {{ $buku->isAvailable() ? 'text-green-600' : 'text-red-600' }}">
-                            {{ $buku->StokTersedia }} / {{ $buku->StokTotal }} buku
-                        </p>
+                    <div class="space-y-1">
+                        <flux:text size="xs" class="uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">Ketersediaan</flux:text>
+                        <flux:badge :variant="$buku->isAvailable() ? 'success' : 'danger'" size="sm">
+                            {{ $buku->StokTersedia }} / {{ $buku->StokTotal }} Unit
+                        </flux:badge>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-500">Rating</p>
-                        <p class="text-sm font-medium text-amber-500">
-                            @for($i = 1; $i <= 5; $i++)
-                                {{ $i <= round($buku->averageRating()) ? '★' : '☆' }}
-                            @endfor
-                            <span class="text-gray-600">({{ $buku->ulasan->count() }} ulasan)</span>
-                        </p>
+                    <div class="space-y-1">
+                        <flux:text size="xs" class="uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">Rating</flux:text>
+                        <div class="flex items-center gap-1">
+                            <flux:icon name="star" variant="solid" class="size-4 text-amber-400" />
+                            <flux:text class="font-bold text-zinc-900 dark:text-zinc-200">{{ $buku->averageRating() }}</flux:text>
+                            <flux:text size="xs" class="text-zinc-400">({{ $buku->ulasan->count() }} ulasan)</flux:text>
+                        </div>
                     </div>
                 </div>
 
                 @if($buku->Deskripsi)
-                <div class="mt-4">
-                    <h3 class="text-sm font-semibold text-gray-900">Deskripsi</h3>
-                    <p class="mt-1 text-sm text-gray-600 leading-relaxed">{{ $buku->Deskripsi }}</p>
+                <div class="space-y-2">
+                    <flux:heading size="sm">Deskripsi</flux:heading>
+                    <flux:text class="leading-relaxed text-zinc-600 dark:text-zinc-400">{{ $buku->Deskripsi }}</flux:text>
                 </div>
                 @endif
             </div>
 
+            <flux:separator />
+
             {{-- Ulasan --}}
-            <div class="rounded-xl bg-white p-6 shadow ring-1 ring-gray-200">
-                <h3 class="text-base font-semibold text-gray-900">Ulasan Pembaca</h3>
+            <div class="space-y-6">
+                <flux:heading size="lg">Ulasan Pembaca</flux:heading>
 
                 @auth
                 @if(auth()->user()->isPeminjam())
-                <form wire:submit="submitUlasan" class="mt-4 space-y-3">
-                    <div>
-                        <label class="text-sm font-medium text-gray-700">Rating</label>
-                        <div class="mt-1 flex gap-1">
-                            @for($i = 1; $i <= 5; $i++)
-                                <button type="button" wire:click="$set('rating', {{ $i }})"
-                                        class="text-2xl {{ $i <= $rating ? 'text-amber-400' : 'text-gray-300' }} hover:text-amber-400 transition">
-                                    ★
-                                </button>
-                            @endfor
+                <div class="rounded-xl bg-zinc-50 dark:bg-zinc-900/50 p-6 border border-zinc-200 dark:border-zinc-800">
+                    <form wire:submit="submitUlasan" class="space-y-4">
+                        <flux:field>
+                            <flux:label>Rating Anda</flux:label>
+                            <div class="mt-1 flex gap-1">
+                                @for($i = 1; $i <= 5; $i++)
+                                    <button type="button" wire:click="$set('rating', {{ $i }})"
+                                            class="transition-transform active:scale-95">
+                                        <flux:icon name="star" :variant="$i <= $rating ? 'solid' : 'outline'" 
+                                                   class="size-8 {{ $i <= $rating ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-600' }} hover:text-amber-400 transition" />
+                                    </button>
+                                @endfor
+                            </div>
+                        </flux:field>
+                        
+                        <flux:textarea wire:model="ulasan" rows="3" placeholder="Bagikan pendapat Anda tentang buku ini..." label="Ulasan Anda" />
+                        
+                        <div class="flex justify-end">
+                            <flux:button type="submit" variant="primary">Kirim Ulasan</flux:button>
                         </div>
-                    </div>
-                    <div>
-                        <textarea wire:model="ulasan" rows="3" placeholder="Tulis ulasan Anda..."
-                                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('ulasan') border-red-500 @enderror">
-                        </textarea>
-                        @error('ulasan')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                    </div>
-                    <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
-                        Kirim Ulasan
-                    </button>
-                </form>
+                    </form>
+                </div>
                 @endif
                 @endauth
 
-                <div class="mt-4 space-y-4">
+                <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
                     @forelse($buku->ulasan as $ulasan)
-                        <div class="border-t border-gray-100 pt-4">
+                        <div class="py-6 space-y-2" wire:key="ulasan-{{ $ulasan->UlasanID }}">
                             <div class="flex items-center justify-between">
-                                <p class="text-sm font-medium text-gray-900">{{ $ulasan->user->NamaLengkap ?? $ulasan->user->name }}</p>
-                                <span class="text-sm text-amber-400">
-                                    @for($i = 1; $i <= 5; $i++){{ $i <= $ulasan->Rating ? '★' : '☆' }}@endfor
-                                </span>
+                                <div class="flex items-center gap-3">
+                                    <flux:avatar :name="$ulasan->user->name" size="xs" />
+                                    <flux:text class="font-bold text-zinc-900 dark:text-zinc-200">{{ $ulasan->user->NamaLengkap ?? $ulasan->user->name }}</flux:text>
+                                </div>
+                                <div class="flex gap-0.5">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <flux:icon name="star" variant="solid" class="size-3 {{ $i <= $ulasan->Rating ? 'text-amber-400' : 'text-zinc-200 dark:text-zinc-800' }}" />
+                                    @endfor
+                                </div>
                             </div>
-                            <p class="mt-1 text-sm text-gray-600">{{ $ulasan->Ulasan }}</p>
-                            <p class="mt-1 text-xs text-gray-400">{{ $ulasan->created_at->diffForHumans() }}</p>
+                            <flux:text class="text-zinc-600 dark:text-zinc-400">{{ $ulasan->Ulasan }}</flux:text>
+                            <flux:text size="xs" class="text-zinc-400">{{ $ulasan->created_at->diffForHumans() }}</flux:text>
                         </div>
                     @empty
-                        <p class="text-sm text-gray-500 mt-4">Belum ada ulasan untuk buku ini.</p>
+                        <div class="py-10 text-center">
+                            <flux:text class="text-zinc-500 italic">Belum ada ulasan untuk buku ini. Jadilah yang pertama memberikan ulasan!</flux:text>
+                        </div>
                     @endforelse
                 </div>
             </div>

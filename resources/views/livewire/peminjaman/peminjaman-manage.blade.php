@@ -1,121 +1,126 @@
 <div>
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <flux:heading size="xl">Kelola Peminjaman</flux:heading>
+        <flux:button wire:click="checkOverdue" variant="filled" icon="clock">
+            Cek Keterlambatan
+        </flux:button>
+    </div>
+
     @if(session('success'))
-        <div class="mb-4 rounded-lg bg-green-50 p-4 text-sm text-green-700 flex justify-between">
-            {{ session('success') }}
-        </div>
+        <flux:callout variant="success" class="mb-6">{{ session('success') }}</flux:callout>
     @endif
     @if(session('error'))
-        <div class="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-700">{{ session('error') }}</div>
+        <flux:callout variant="danger" class="mb-6">{{ session('error') }}</flux:callout>
     @endif
 
-    {{-- Toolbar --}}
-    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div class="flex flex-1 gap-3">
-            <input wire:model.live.debounce.300ms="search" type="text"
-                   placeholder="Cari peminjam atau buku..."
-                   class="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"/>
-            <select wire:model.live="statusFilter"
-                    class="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                <option value="">Semua Status</option>
-                @foreach($statusOptions as $status)
-                    <option value="{{ $status->value }}">{{ $status->label() }}</option>
-                @endforeach
-            </select>
-        </div>
-        <button wire:click="checkOverdue"
-                class="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-400">
-            Cek Keterlambatan
-        </button>
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row">
+        <flux:input wire:model.live.debounce.300ms="search" icon="magnifying-glass" placeholder="Cari peminjam atau buku..." class="flex-1" />
+        <flux:select wire:model.live="statusFilter" placeholder="Semua Status" class="sm:w-64">
+            <flux:select.option value="">Semua Status</flux:select.option>
+            @foreach($statusOptions as $status)
+                <flux:select.option value="{{ $status->value }}">{{ $status->label() }}</flux:select.option>
+            @endforeach
+        </flux:select>
     </div>
 
-    {{-- Table --}}
-    <div class="overflow-hidden rounded-xl bg-white shadow ring-1 ring-gray-200">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Peminjam</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Buku</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Tgl Pinjam</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Tgl Kembali</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
-                    <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
+    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
+        <flux:table>
+            <flux:table.columns>
+                <flux:table.column>Peminjam</flux:table.column>
+                <flux:table.column>Buku</flux:table.column>
+                <flux:table.column>Periode</flux:table.column>
+                <flux:table.column>Status</flux:table.column>
+                <flux:table.column align="right">Aksi</flux:table.column>
+            </flux:table.columns>
+
+            <flux:table.rows>
                 @forelse($peminjamanList as $p)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3">
-                            <p class="text-sm font-medium text-gray-900">{{ $p->user->NamaLengkap ?? $p->user->name }}</p>
-                            <p class="text-xs text-gray-500">{{ $p->user->email }}</p>
-                        </td>
-                        <td class="px-4 py-3">
-                            <p class="text-sm text-gray-900 max-w-xs truncate">{{ $p->buku->Judul }}</p>
-                            <p class="text-xs text-gray-500">{{ $p->buku->Penulis }}</p>
-                        </td>
-                        <td class="px-4 py-3 text-sm text-gray-600">
-                            {{ $p->TanggalPeminjaman->format('d M Y') }}
-                        </td>
-                        <td class="px-4 py-3 text-sm text-gray-600">
-                            {{ $p->TanggalPengembalian->format('d M Y') }}
-                            @if($p->TanggalDikembalikan)
-                                <p class="text-xs text-green-600">Kembali: {{ $p->TanggalDikembalikan->format('d M Y') }}</p>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ $p->StatusPeminjaman->badge() }}">
+                    <flux:table.row wire:key="manage-pinjam-{{ $p->PeminjamanID }}">
+                        <flux:table.cell>
+                            <div class="flex items-center gap-3">
+                                <flux:avatar :name="$p->user->name" size="xs" />
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-zinc-900 dark:text-zinc-100">{{ $p->user->NamaLengkap ?? $p->user->name }}</span>
+                                    <span class="text-xs text-zinc-500">{{ $p->user->email }}</span>
+                                </div>
+                            </div>
+                        </flux:table.cell>
+                        <flux:table.cell>
+                            <div class="flex flex-col max-w-xs">
+                                <span class="font-medium text-zinc-900 dark:text-zinc-200 truncate">{{ $p->buku->Judul }}</span>
+                                <span class="text-xs text-zinc-500">{{ $p->buku->Penulis }}</span>
+                            </div>
+                        </flux:table.cell>
+                        <flux:table.cell>
+                            <div class="flex flex-col text-xs text-zinc-600 dark:text-zinc-400">
+                                <span>P: {{ $p->TanggalPeminjaman->translatedFormat('d M Y') }}</span>
+                                <span class="{{ $p->isTerlambat() ? 'text-red-600 font-bold' : '' }}">K: {{ $p->TanggalPengembalian->translatedFormat('d M Y') }}</span>
+                            </div>
+                        </flux:table.cell>
+                        <flux:table.cell>
+                            <flux:badge :variant="$p->StatusPeminjaman->color()" size="sm" inset="top bottom">
                                 {{ $p->StatusPeminjaman->label() }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-right">
+                            </flux:badge>
+                        </flux:table.cell>
+                        <flux:table.cell align="right">
                             <div class="flex justify-end gap-2">
                                 @if($p->StatusPeminjaman->value === 'menunggu')
-                                    @if($confirmingApprove === $p->PeminjamanID)
-                                        <span class="text-xs text-gray-500">Yakin?</span>
-                                        <button wire:click="approve({{ $p->PeminjamanID }})" class="text-xs font-semibold text-green-600 hover:text-green-800">Ya</button>
-                                        <button wire:click="$set('confirmingApprove', null)" class="text-xs font-semibold text-gray-500 hover:text-gray-700">Tidak</button>
-                                    @else
-                                        <button wire:click="$set('confirmingApprove', {{ $p->PeminjamanID }})"
-                                                class="rounded bg-green-100 px-2 py-1 text-xs font-semibold text-green-700 hover:bg-green-200">
-                                            Setujui
-                                        </button>
-                                    @endif
-                                    @if($confirmingReject === $p->PeminjamanID)
-                                        <span class="text-xs text-gray-500">Yakin?</span>
-                                        <button wire:click="reject({{ $p->PeminjamanID }})" class="text-xs font-semibold text-red-600 hover:text-red-800">Ya</button>
-                                        <button wire:click="$set('confirmingReject', null)" class="text-xs font-semibold text-gray-500">Tidak</button>
-                                    @else
-                                        <button wire:click="$set('confirmingReject', {{ $p->PeminjamanID }})"
-                                                class="rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-200">
-                                            Tolak
-                                        </button>
-                                    @endif
+                                    <flux:button wire:click="$set('confirmingApprove', {{ $p->PeminjamanID }})" variant="ghost" size="sm" class="text-emerald-600">Setujui</flux:button>
+                                    <flux:button wire:click="$set('confirmingReject', {{ $p->PeminjamanID }})" variant="ghost" size="sm" class="text-red-600">Tolak</flux:button>
                                 @elseif(in_array($p->StatusPeminjaman->value, ['dipinjam', 'terlambat']))
-                                    @if($confirmingReturn === $p->PeminjamanID)
-                                        <span class="text-xs text-gray-500">Konfirmasi pengembalian?</span>
-                                        <button wire:click="returnBook({{ $p->PeminjamanID }})" class="text-xs font-semibold text-blue-600 hover:text-blue-800">Ya</button>
-                                        <button wire:click="$set('confirmingReturn', null)" class="text-xs font-semibold text-gray-500">Tidak</button>
-                                    @else
-                                        <button wire:click="$set('confirmingReturn', {{ $p->PeminjamanID }})"
-                                                class="rounded bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-200">
-                                            Kembalikan
-                                        </button>
-                                    @endif
+                                    <flux:button wire:click="$set('confirmingReturn', {{ $p->PeminjamanID }})" variant="primary" size="sm">Kembalikan</flux:button>
                                 @else
-                                    <span class="text-xs text-gray-400">—</span>
+                                    <span class="text-zinc-400">—</span>
                                 @endif
                             </div>
-                        </td>
-                    </tr>
+                        </flux:table.cell>
+                    </flux:table.row>
                 @empty
-                    <tr>
-                        <td colspan="6" class="px-4 py-12 text-center text-sm text-gray-500">
-                            Tidak ada data peminjaman.
-                        </td>
-                    </tr>
+                    <flux:table.row>
+                        <flux:table.cell colspan="5" class="py-12 text-center text-zinc-500">
+                            Tidak ada data peminjaman yang ditemukan.
+                        </flux:table.cell>
+                    </flux:table.row>
                 @endforelse
-            </tbody>
-        </table>
+            </flux:table.rows>
+        </flux:table>
     </div>
 
-    <div class="mt-4">{{ $peminjamanList->links() }}</div>
+    <div class="mt-6">
+        {{ $peminjamanList->links() }}
+    </div>
+
+    {{-- Modals for confirmation --}}
+    <flux:modal wire:model="confirmingApprove" class="md:w-96">
+        <div class="space-y-6">
+            <flux:heading size="lg">Konfirmasi Persetujuan</flux:heading>
+            <flux:text>Apakah Anda yakin ingin menyetujui peminjaman buku ini?</flux:text>
+            <div class="flex gap-3 justify-end">
+                <flux:modal.close><flux:button variant="ghost">Batal</flux:button></flux:modal.close>
+                <flux:button wire:click="approve({{ $confirmingApprove }})" variant="primary">Ya, Setujui</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    <flux:modal wire:model="confirmingReject" class="md:w-96">
+        <div class="space-y-6">
+            <flux:heading size="lg">Konfirmasi Penolakan</flux:heading>
+            <flux:text>Apakah Anda yakin ingin menolak permintaan peminjaman ini?</flux:text>
+            <div class="flex gap-3 justify-end">
+                <flux:modal.close><flux:button variant="ghost">Batal</flux:button></flux:modal.close>
+                <flux:button wire:click="reject({{ $confirmingReject }})" variant="danger">Ya, Tolak</flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    <flux:modal wire:model="confirmingReturn" class="md:w-96">
+        <div class="space-y-6">
+            <flux:heading size="lg">Konfirmasi Pengembalian</flux:heading>
+            <flux:text>Apakah buku ini sudah dikembalikan dengan benar?</flux:text>
+            <div class="flex gap-3 justify-end">
+                <flux:modal.close><flux:button variant="ghost">Batal</flux:button></flux:modal.close>
+                <flux:button wire:click="returnBook({{ $confirmingReturn }})" variant="primary">Ya, Sudah Kembali</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </div>

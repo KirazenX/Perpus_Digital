@@ -1,14 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Livewire\Buku\BukuIndex;
+use App\Livewire\Admin\ManajemenPengguna;
 use App\Livewire\Buku\BukuDetail;
 use App\Livewire\Buku\BukuForm;
+use App\Livewire\Buku\BukuIndex;
+use App\Livewire\Laporan\LaporanPeminjaman;
 use App\Livewire\Peminjaman\PeminjamanForm;
 use App\Livewire\Peminjaman\PeminjamanManage;
 use App\Livewire\Peminjaman\PeminjamanSaya;
-use App\Livewire\Admin\ManajemenPengguna;
-use App\Livewire\Laporan\LaporanPeminjaman;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('buku.index');
@@ -21,8 +21,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', function () {
         $role = auth()->user()->role;
-        if ($role === 'administrator') return redirect()->route('admin.pengguna');
-        if ($role === 'petugas') return redirect()->route('peminjaman.manage');
+        if ($role === 'administrator') {
+            return redirect()->route('admin.pengguna');
+        }
+        if ($role === 'petugas') {
+            return redirect()->route('peminjaman.manage');
+        }
+
         return redirect()->route('peminjaman.saya');
     })->name('dashboard');
 
@@ -42,3 +47,5 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/pengguna', ManajemenPengguna::class)->name('admin.pengguna');
     });
 });
+
+require __DIR__.'/settings.php';

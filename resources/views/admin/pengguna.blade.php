@@ -1,11 +1,10 @@
-{{-- resources/views/admin/pengguna.blade.php --}}
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">Manajemen Pengguna</h2>
-    </x-slot>
-    <div class="py-8">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <livewire:admin.manajemen-pengguna />
+<x-layouts.app :title="__('Manajemen Pengguna')">
+    <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="mb-2">
+            <flux:heading size="xl" level="1">Manajemen Pengguna</flux:heading>
+            <flux:subheading>Kelola akun administrator, petugas, dan peminjam</flux:subheading>
         </div>
+
+        <livewire:admin.manajemen-pengguna />
     </div>
-</x-app-layout>
+</x-layouts.app>

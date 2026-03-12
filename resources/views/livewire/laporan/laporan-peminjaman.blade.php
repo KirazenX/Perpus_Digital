@@ -1,154 +1,174 @@
 <div>
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <flux:heading size="xl">Laporan Peminjaman</flux:heading>
+        <flux:button icon="printer" variant="outline" x-on:click="window.print()">Cetak Laporan</flux:button>
+    </div>
+
     {{-- Filter --}}
-    <div class="mb-6 rounded-xl bg-white p-4 shadow ring-1 ring-gray-200">
-        <div class="flex flex-wrap gap-4 items-end">
-            <div>
-                <label class="text-xs font-medium text-gray-500">Dari Tanggal</label>
-                <input wire:model.live="dateFrom" type="date"
-                       class="mt-1 block rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"/>
+    <div class="mb-8 rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-sm border border-zinc-200 dark:border-zinc-800">
+        <div class="flex flex-wrap gap-6 items-end">
+            <div class="flex-1 min-w-[200px]">
+                <flux:field>
+                    <flux:label>Dari Tanggal</flux:label>
+                    <flux:input wire:model.live="dateFrom" type="date" />
+                </flux:field>
             </div>
-            <div>
-                <label class="text-xs font-medium text-gray-500">Sampai Tanggal</label>
-                <input wire:model.live="dateTo" type="date"
-                       class="mt-1 block rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"/>
+            <div class="flex-1 min-w-[200px]">
+                <flux:field>
+                    <flux:label>Sampai Tanggal</flux:label>
+                    <flux:input wire:model.live="dateTo" type="date" />
+                </flux:field>
             </div>
-            <div>
-                <label class="text-xs font-medium text-gray-500">Filter Status</label>
-                <select wire:model.live="statusFilter"
-                        class="mt-1 block rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    <option value="">Semua Status</option>
+            <div class="flex-1 min-w-[200px]">
+                <flux:select wire:model.live="statusFilter" label="Filter Status">
+                    <flux:select.option value="">Semua Status</flux:select.option>
                     @foreach($statusOptions as $status)
-                        <option value="{{ $status->value }}">{{ $status->label() }}</option>
+                        <flux:select.option value="{{ $status->value }}">{{ $status->label() }}</flux:select.option>
                     @endforeach
-                </select>
+                </flux:select>
             </div>
-            <div>
-                <label class="text-xs font-medium text-gray-500">Tampilkan</label>
-                <select wire:model.live="reportType"
-                        class="mt-1 block rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    <option value="peminjaman">Detail Peminjaman</option>
-                    <option value="buku_populer">Buku Paling Populer</option>
-                    <option value="pengguna_aktif">Pengguna Paling Aktif</option>
-                </select>
+            <div class="flex-1 min-w-[200px]">
+                <flux:select wire:model.live="reportType" label="Tampilkan Analisis">
+                    <flux:select.option value="peminjaman">Detail Peminjaman</flux:select.option>
+                    <flux:select.option value="buku_populer">Buku Terpopuler</flux:select.option>
+                    <flux:select.option value="pengguna_aktif">Pengguna Teraktif</flux:select.option>
+                </flux:select>
             </div>
         </div>
     </div>
 
     {{-- Statistik Cards --}}
-    <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+    <div class="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         @php
             $statCards = [
-                ['label' => 'Total', 'value' => $statistik['total'], 'color' => 'indigo'],
-                ['label' => 'Menunggu', 'value' => $statistik['menunggu'], 'color' => 'yellow'],
-                ['label' => 'Dipinjam', 'value' => $statistik['dipinjam'], 'color' => 'blue'],
-                ['label' => 'Dikembalikan', 'value' => $statistik['dikembalikan'], 'color' => 'green'],
-                ['label' => 'Terlambat', 'value' => $statistik['terlambat'], 'color' => 'red'],
-                ['label' => 'Ditolak', 'value' => $statistik['ditolak'], 'color' => 'gray'],
+                ['label' => 'Total', 'value' => $statistik['total'], 'color' => 'indigo', 'icon' => 'list-bullet'],
+                ['label' => 'Menunggu', 'value' => $statistik['menunggu'], 'color' => 'amber', 'icon' => 'clock'],
+                ['label' => 'Dipinjam', 'value' => $statistik['dipinjam'], 'color' => 'blue', 'icon' => 'arrow-up-tray'],
+                ['label' => 'Kembali', 'value' => $statistik['dikembalikan'], 'color' => 'emerald', 'icon' => 'arrow-down-tray'],
+                ['label' => 'Terlambat', 'value' => $statistik['terlambat'], 'color' => 'red', 'icon' => 'exclamation-triangle'],
+                ['label' => 'Ditolak', 'value' => $statistik['ditolak'], 'color' => 'zinc', 'icon' => 'x-circle'],
             ];
         @endphp
         @foreach($statCards as $card)
-            <div class="rounded-xl bg-white p-4 shadow ring-1 ring-gray-200 text-center">
-                <p class="text-2xl font-bold text-{{ $card['color'] }}-600">{{ $card['value'] }}</p>
-                <p class="text-xs text-gray-500 mt-1">{{ $card['label'] }}</p>
+            <div class="rounded-2xl bg-white dark:bg-zinc-900 p-4 shadow-sm border border-zinc-200 dark:border-zinc-800 text-center flex flex-col items-center">
+                <div class="rounded-full p-2 mb-2 bg-{{ $card['color'] }}-50 dark:bg-{{ $card['color'] }}-950/30 text-{{ $card['color'] }}-600 dark:text-{{ $card['color'] }}-400">
+                    <flux:icon name="{{ $card['icon'] }}" class="size-4" />
+                </div>
+                <flux:text size="sm" class="font-bold text-zinc-900 dark:text-zinc-100">{{ $card['value'] }}</flux:text>
+                <flux:text class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider mt-1">{{ $card['label'] }}</flux:text>
             </div>
         @endforeach
     </div>
 
     {{-- Content based on reportType --}}
-    @if($reportType === 'peminjaman')
-        <div class="overflow-hidden rounded-xl bg-white shadow ring-1 ring-gray-200">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Peminjam</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Buku</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Tgl Pinjam</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Tgl Kembali</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
+    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
+        @if($reportType === 'peminjaman')
+            <flux:table>
+                <flux:table.columns>
+                    <flux:table.column>Peminjam</flux:table.column>
+                    <flux:table.column>Buku</flux:table.column>
+                    <flux:table.column>Tgl Pinjam</flux:table.column>
+                    <flux:table.column>Tgl Kembali</flux:table.column>
+                    <flux:table.column>Status</flux:table.column>
+                </flux:table.columns>
+
+                <flux:table.rows>
                     @forelse($peminjamanData as $p)
-                        <tr>
-                            <td class="px-4 py-3">
-                                <p class="text-sm font-medium text-gray-900">{{ $p->user->NamaLengkap ?? $p->user->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $p->user->email }}</p>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-900 max-w-xs truncate">{{ $p->buku->Judul }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-600">{{ $p->TanggalPeminjaman->format('d M Y') }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-600">{{ $p->TanggalPengembalian->format('d M Y') }}</td>
-                            <td class="px-4 py-3">
-                                <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $p->StatusPeminjaman->badge() }}">
+                        <flux:table.row wire:key="report-pinjam-{{ $p->PeminjamanID }}">
+                            <flux:table.cell>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-zinc-900 dark:text-zinc-100">{{ $p->user->NamaLengkap ?? $p->user->name }}</span>
+                                    <span class="text-xs text-zinc-500">{{ $p->user->email }}</span>
+                                </div>
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                <span class="font-medium text-zinc-900 dark:text-zinc-200 truncate max-w-xs block">{{ $p->buku->Judul }}</span>
+                            </flux:table.cell>
+                            <flux:table.cell class="text-xs text-zinc-600 dark:text-zinc-400">{{ $p->TanggalPeminjaman->translatedFormat('d M Y') }}</flux:table.cell>
+                            <flux:table.cell class="text-xs text-zinc-600 dark:text-zinc-400">{{ $p->TanggalPengembalian->translatedFormat('d M Y') }}</flux:table.cell>
+                            <flux:table.cell>
+                                <flux:badge :variant="$p->StatusPeminjaman->color()" size="sm" inset="top bottom">
                                     {{ $p->StatusPeminjaman->label() }}
-                                </span>
-                            </td>
-                        </tr>
+                                </flux:badge>
+                            </flux:table.cell>
+                        </flux:table.row>
                     @empty
-                        <tr><td colspan="5" class="px-4 py-12 text-center text-sm text-gray-500">Tidak ada data.</td></tr>
+                        <flux:table.row>
+                            <flux:table.cell colspan="5" class="py-12 text-center text-zinc-500">Tidak ada data peminjaman.</flux:table.cell>
+                        </flux:table.row>
                     @endforelse
-                </tbody>
-            </table>
-            <div class="p-4">{{ $peminjamanData->links() }}</div>
-        </div>
+                </flux:table.rows>
+            </flux:table>
+            @if($peminjamanData->hasPages())
+                <div class="p-4 border-t border-zinc-100 dark:border-zinc-800">
+                    {{ $peminjamanData->links() }}
+                </div>
+            @endif
 
-    @elseif($reportType === 'buku_populer')
-        <div class="overflow-hidden rounded-xl bg-white shadow ring-1 ring-gray-200">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">#</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Buku</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Total Dipinjam</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
+        @elseif($reportType === 'buku_populer')
+            <flux:table>
+                <flux:table.columns>
+                    <flux:table.column class="w-12">#</flux:table.column>
+                    <flux:table.column>Buku</flux:table.column>
+                    <flux:table.column>Total Dipinjam</flux:table.column>
+                </flux:table.columns>
+
+                <flux:table.rows>
                     @foreach($bukuPopuler as $i => $item)
-                        <tr>
-                            <td class="px-4 py-3 text-sm font-bold text-gray-400">{{ $i + 1 }}</td>
-                            <td class="px-4 py-3">
-                                <p class="text-sm font-medium text-gray-900">{{ $item->buku->Judul }}</p>
-                                <p class="text-xs text-gray-500">{{ $item->buku->Penulis }}</p>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center gap-2">
-                                    <div class="h-2 rounded-full bg-indigo-500" style="width: {{ ($item->total_dipinjam / ($bukuPopuler->first()->total_dipinjam ?? 1)) * 120 }}px; max-width: 120px;"></div>
-                                    <span class="text-sm font-semibold text-gray-900">{{ $item->total_dipinjam }}x</span>
+                        <flux:table.row wire:key="populer-buku-{{ $item->BukuID }}">
+                            <flux:table.cell class="font-bold text-zinc-400">{{ $i + 1 }}</flux:table.cell>
+                            <flux:table.cell>
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-zinc-900 dark:text-zinc-100">{{ $item->buku->Judul }}</span>
+                                    <span class="text-xs text-zinc-500">{{ $item->buku->Penulis }}</span>
                                 </div>
-                            </td>
-                        </tr>
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-1 max-w-[200px] h-2 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                                        <div class="h-full bg-indigo-500" style="width: {{ ($item->total_dipinjam / ($bukuPopuler->first()->total_dipinjam ?? 1)) * 100 }}%"></div>
+                                    </div>
+                                    <span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">{{ $item->total_dipinjam }}x</span>
+                                </div>
+                            </flux:table.cell>
+                        </flux:table.row>
                     @endforeach
-                </tbody>
-            </table>
-        </div>
+                </flux:table.rows>
+            </flux:table>
 
-    @elseif($reportType === 'pengguna_aktif')
-        <div class="overflow-hidden rounded-xl bg-white shadow ring-1 ring-gray-200">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">#</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Pengguna</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Total Pinjam</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
+        @elseif($reportType === 'pengguna_aktif')
+            <flux:table>
+                <flux:table.columns>
+                    <flux:table.column class="w-12">#</flux:table.column>
+                    <flux:table.column>Pengguna</flux:table.column>
+                    <flux:table.column>Total Pinjam</flux:table.column>
+                </flux:table.columns>
+
+                <flux:table.rows>
                     @foreach($penggunaAktif as $i => $item)
-                        <tr>
-                            <td class="px-4 py-3 text-sm font-bold text-gray-400">{{ $i + 1 }}</td>
-                            <td class="px-4 py-3">
-                                <p class="text-sm font-medium text-gray-900">{{ $item->user->NamaLengkap ?? $item->user->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $item->user->email }}</p>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center gap-2">
-                                    <div class="h-2 rounded-full bg-green-500" style="width: {{ ($item->total_pinjam / ($penggunaAktif->first()->total_pinjam ?? 1)) * 120 }}px; max-width: 120px;"></div>
-                                    <span class="text-sm font-semibold text-gray-900">{{ $item->total_pinjam }}x</span>
+                        <flux:table.row wire:key="aktif-user-{{ $item->UserID }}">
+                            <flux:table.cell class="font-bold text-zinc-400">{{ $i + 1 }}</flux:table.cell>
+                            <flux:table.cell>
+                                <div class="flex items-center gap-3">
+                                    <flux:avatar :name="$item->user->name" size="xs" />
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-zinc-900 dark:text-zinc-100">{{ $item->user->NamaLengkap ?? $item->user->name }}</span>
+                                        <span class="text-xs text-zinc-500">{{ $item->user->email }}</span>
+                                    </div>
                                 </div>
-                            </td>
-                        </tr>
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-1 max-w-[200px] h-2 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                                        <div class="h-full bg-emerald-500" style="width: {{ ($item->total_pinjam / ($penggunaAktif->first()->total_pinjam ?? 1)) * 100 }}%"></div>
+                                    </div>
+                                    <span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">{{ $item->total_pinjam }}x</span>
+                                </div>
+                            </flux:table.cell>
+                        </flux:table.row>
                     @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endif
+                </flux:table.rows>
+            </flux:table>
+        @endif
+    </div>
 </div>

@@ -1,15 +1,11 @@
-{{-- resources/views/buku/show.blade.php --}}
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center gap-2">
-            <a href="{{ route('buku.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">← Katalog</a>
-            <span class="text-gray-400">/</span>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">Detail Buku</h2>
+<x-layouts.app :title="$buku->Judul">
+    <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="mb-2 flex items-center gap-2 text-sm">
+            <a href="{{ route('buku.index') }}" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200" wire:navigate>
+                ← Katalog
+            </a>
         </div>
-    </x-slot>
-    <div class="py-8">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <livewire:buku.buku-detail :buku="$buku" />
-        </div>
+
+        <livewire:buku.buku-detail :buku="$buku" />
     </div>
-</x-app-layout>
+</x-layouts.app>

@@ -1,11 +1,10 @@
-{{-- resources/views/peminjaman/manage.blade.php --}}
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">Kelola Peminjaman</h2>
-    </x-slot>
-    <div class="py-8">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <livewire:peminjaman.peminjaman-manage />
+<x-layouts.app :title="__('Kelola Peminjaman')">
+    <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="mb-2">
+            <flux:heading size="xl" level="1">Kelola Peminjaman</flux:heading>
+            <flux:subheading>Setujui, tolak, atau konfirmasi pengembalian buku</flux:subheading>
         </div>
+
+        <livewire:peminjaman.peminjaman-manage />
     </div>
-</x-app-layout>
+</x-layouts.app>

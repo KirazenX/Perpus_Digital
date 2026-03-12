@@ -31,6 +31,14 @@ class User extends Authenticatable
         'is_active' => 'boolean',
     ];
 
+    public function initials(): string
+    {
+        return str($this->name)
+            ->explode(' ')
+            ->map(fn (string $name) => str($name)->limit(1, ''))
+            ->join('');
+    }
+
     public function isAdministrator(): bool
     {
         return $this->role === 'administrator';

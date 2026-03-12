@@ -1,11 +1,10 @@
-{{-- resources/views/peminjaman/saya.blade.php --}}
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">Peminjaman Saya</h2>
-    </x-slot>
-    <div class="py-8">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <livewire:peminjaman.peminjaman-saya />
+<x-layouts.app :title="__('Peminjaman Saya')">
+    <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="mb-2">
+            <flux:heading size="xl" level="1">Peminjaman Saya</flux:heading>
+            <flux:subheading>Riwayat dan status peminjaman buku Anda</flux:subheading>
         </div>
+
+        <livewire:peminjaman.peminjaman-saya />
     </div>
-</x-app-layout>
+</x-layouts.app>

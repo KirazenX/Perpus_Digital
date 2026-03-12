@@ -1,11 +1,10 @@
-{{-- resources/views/buku/create.blade.php --}}
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">Tambah Buku Baru</h2>
-    </x-slot>
-    <div class="py-8">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <livewire:buku.buku-form />
+<x-layouts.app :title="__('Tambah Buku')">
+    <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="mb-2">
+            <flux:heading size="xl" level="1">Tambah Buku Baru</flux:heading>
+            <flux:subheading>Isi form berikut untuk menambahkan buku ke perpustakaan</flux:subheading>
         </div>
+
+        <livewire:buku.buku-form />
     </div>
-</x-app-layout>
+</x-layouts.app>

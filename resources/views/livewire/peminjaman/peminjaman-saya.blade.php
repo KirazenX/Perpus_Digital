@@ -1,74 +1,82 @@
 <div>
-    @if(session('success'))
-        <div class="mb-4 rounded-lg bg-green-50 p-4 text-sm text-green-700">{{ session('success') }}</div>
-    @endif
-
-    <div class="mb-4 flex justify-end">
-        <select wire:model.live="statusFilter"
-                class="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-            <option value="">Semua Status</option>
+    <div class="mb-8 flex items-center justify-between">
+        <flux:heading size="xl">Peminjaman Saya</flux:heading>
+        <flux:select wire:model.live="statusFilter" placeholder="Filter Status" class="w-48">
+            <flux:select.option value="">Semua Status</flux:select.option>
             @foreach($statusOptions as $status)
-                <option value="{{ $status->value }}">{{ $status->label() }}</option>
+                <flux:select.option value="{{ $status->value }}">{{ $status->label() }}</flux:select.option>
             @endforeach
-        </select>
+        </flux:select>
     </div>
 
+    @if(session('success'))
+        <flux:callout variant="success" class="mb-6">{{ session('success') }}</flux:callout>
+    @endif
+
     @if($peminjamanList->isEmpty())
-        <div class="rounded-xl bg-gray-50 px-6 py-14 text-center">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/>
-            </svg>
-            <h3 class="mt-2 text-sm font-semibold text-gray-900">Belum ada peminjaman</h3>
-            <p class="mt-1 text-sm text-gray-500">Kunjungi katalog dan mulai pinjam buku.</p>
-            <a href="{{ route('buku.index') }}" class="mt-4 inline-block rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
-                Lihat Katalog
-            </a>
+        <div class="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50 px-6 py-20 text-center">
+            <flux:icon name="clipboard-document-list" class="mx-auto size-12 text-zinc-400 dark:text-zinc-600" />
+            <flux:heading size="lg" class="mt-4">Belum ada peminjaman</flux:heading>
+            <flux:text class="mt-2 mb-6">Kunjungi katalog dan mulai pinjam buku favorit Anda.</flux:text>
+            <flux:button href="{{ route('buku.index') }}" variant="primary" wire:navigate>
+                Lihat Katalog Buku
+            </flux:button>
         </div>
     @else
-        <div class="space-y-4">
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
             @foreach($peminjamanList as $p)
-                <div class="flex gap-4 rounded-xl bg-white p-4 shadow ring-1 ring-gray-200">
-                    <a href="{{ route('buku.show', $p->buku->BukuID) }}">
-                        @if($p->buku->CoverImage)
-                            <img src="{{ asset('storage/' . $p->buku->CoverImage) }}" alt="{{ $p->buku->Judul }}"
-                                 class="h-20 w-14 rounded-lg object-cover shadow"/>
-                        @else
-                            <div class="flex h-20 w-14 items-center justify-center rounded-lg bg-indigo-50">
-                                <svg class="h-8 w-8 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-                                </svg>
-                            </div>
-                        @endif
+                <div wire:key="pinjam-{{ $p->PeminjamanID }}" class="flex gap-5 rounded-2xl bg-white dark:bg-zinc-900 p-5 border border-zinc-200 dark:border-zinc-800 shadow-sm transition hover:border-indigo-500">
+                    <a href="{{ route('buku.show', $p->buku->BukuID) }}" class="shrink-0">
+                        <div class="overflow-hidden rounded-xl shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-700">
+                            @if($p->buku->CoverImage)
+                                <img src="{{ asset('storage/' . $p->buku->CoverImage) }}" alt="{{ $p->buku->Judul }}"
+                                     class="h-28 w-20 object-cover"/>
+                            @else
+                                <div class="flex h-28 w-20 items-center justify-center bg-indigo-50 dark:bg-indigo-950/30">
+                                    <flux:icon name="book-open" class="size-8 text-indigo-200 dark:text-indigo-900" />
+                                </div>
+                            @endif
+                        </div>
                     </a>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-start justify-between gap-2">
-                            <div>
+                    
+                    <div class="flex-1 min-w-0 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-start justify-between gap-2 mb-1">
                                 <a href="{{ route('buku.show', $p->buku->BukuID) }}"
-                                   class="text-sm font-semibold text-gray-900 hover:text-indigo-600">
+                                   class="text-base font-bold text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 truncate">
                                     {{ $p->buku->Judul }}
                                 </a>
-                                <p class="text-xs text-gray-500">{{ $p->buku->Penulis }}</p>
+                                <flux:badge :variant="$p->StatusPeminjaman->color()" size="sm">
+                                    {{ $p->StatusPeminjaman->label() }}
+                                </flux:badge>
                             </div>
-                            <span class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium {{ $p->StatusPeminjaman->badge() }}">
-                                {{ $p->StatusPeminjaman->label() }}
-                            </span>
+                            <flux:text size="sm" class="truncate">{{ $p->buku->Penulis }}</flux:text>
                         </div>
-                        <div class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-500">
-                            <span>Dipinjam: {{ $p->TanggalPeminjaman->format('d M Y') }}</span>
-                            <span>Kembali: {{ $p->TanggalPengembalian->format('d M Y') }}</span>
-                            @if($p->TanggalDikembalikan)
-                                <span class="text-green-600">Dikembalikan: {{ $p->TanggalDikembalikan->format('d M Y') }}</span>
-                            @endif
-                            @if($p->StatusPeminjaman->value === 'dipinjam' && now()->gt($p->TanggalPengembalian))
-                                <span class="text-red-600 font-semibold">
-                                    Terlambat {{ now()->diffInDays($p->TanggalPengembalian) }} hari!
+
+                        <div class="mt-4 grid grid-cols-2 gap-4 border-t border-zinc-100 dark:border-zinc-800 pt-4">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] uppercase font-bold text-zinc-400">Tgl Pinjam</span>
+                                <span class="text-xs font-medium dark:text-zinc-300">{{ $p->TanggalPeminjaman->translatedFormat('d M Y') }}</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] uppercase font-bold text-zinc-400">Tgl Kembali</span>
+                                <span class="text-xs font-medium {{ $p->isTerlambat() ? 'text-red-600 font-bold' : 'dark:text-zinc-300' }}">
+                                    {{ $p->TanggalPengembalian->translatedFormat('d M Y') }}
                                 </span>
-                            @endif
+                            </div>
                         </div>
+                        
+                        @if($p->TanggalDikembalikan)
+                            <div class="mt-2 text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                                Dikembalikan pada {{ $p->TanggalDikembalikan->translatedFormat('d M Y') }}
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endforeach
         </div>
-        <div class="mt-4">{{ $peminjamanList->links() }}</div>
+        <div class="mt-8">
+            {{ $peminjamanList->links() }}
+        </div>
     @endif
 </div>

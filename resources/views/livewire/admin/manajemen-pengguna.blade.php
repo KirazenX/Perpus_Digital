@@ -1,166 +1,127 @@
 <div>
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <flux:heading size="xl">Manajemen Pengguna</flux:heading>
+        <flux:button wire:click="openCreate" variant="primary" icon="plus">
+            Tambah Pengguna
+        </flux:button>
+    </div>
+
     @if(session('success'))
-        <div class="mb-4 rounded-lg bg-green-50 p-4 text-sm text-green-700">{{ session('success') }}</div>
+        <flux:callout variant="success" class="mb-6">{{ session('success') }}</flux:callout>
     @endif
     @if(session('error'))
-        <div class="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-700">{{ session('error') }}</div>
+        <flux:callout variant="danger" class="mb-6">{{ session('error') }}</flux:callout>
     @endif
 
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row">
+        <flux:input wire:model.live.debounce.300ms="search" icon="magnifying-glass" placeholder="Cari pengguna..." class="flex-1" />
+        <flux:select wire:model.live="roleFilter" placeholder="Semua Role" class="sm:w-64">
+            <flux:select.option value="">Semua Role</flux:select.option>
+            <flux:select.option value="administrator">Administrator</flux:select.option>
+            <flux:select.option value="petugas">Petugas</flux:select.option>
+            <flux:select.option value="peminjam">Peminjam</flux:select.option>
+        </flux:select>
+    </div>
+
+    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
+        <flux:table>
+            <flux:table.columns>
+                <flux:table.column>Pengguna</flux:table.column>
+                <flux:table.column>Role</flux:table.column>
+                <flux:table.column>Status</flux:table.column>
+                <flux:table.column>Bergabung</flux:table.column>
+                <flux:table.column align="right">Aksi</flux:table.column>
+            </flux:table.columns>
+
+            <flux:table.rows>
+                @forelse($users as $user)
+                    <flux:table.row wire:key="user-{{ $user->id }}">
+                        <flux:table.cell>
+                            <div class="flex items-center gap-3">
+                                <flux:avatar :name="$user->name" size="xs" />
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-zinc-900 dark:text-zinc-100">{{ $user->NamaLengkap ?? $user->name }}</span>
+                                    <span class="text-xs text-zinc-500">{{ $user->email }}</span>
+                                </div>
+                            </div>
+                        </flux:table.cell>
+                        <flux:table.cell>
+                            <flux:badge size="sm" :variant="$user->role === 'administrator' ? 'primary' : ($user->role === 'petugas' ? 'brand' : 'neutral')">
+                                {{ ucfirst($user->role) }}
+                            </flux:badge>
+                        </flux:table.cell>
+                        <flux:table.cell>
+                            <flux:badge size="sm" :variant="$user->is_active ? 'success' : 'danger'" inset="top bottom">
+                                {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
+                            </flux:badge>
+                        </flux:table.cell>
+                        <flux:table.cell class="text-xs text-zinc-500">
+                            {{ $user->created_at->translatedFormat('d M Y') }}
+                        </flux:table.cell>
+                        <flux:table.cell align="right">
+                            <div class="flex justify-end gap-2">
+                                <flux:button wire:click="openEdit({{ $user->id }})" variant="ghost" size="sm" icon="pencil" />
+                                @if($user->id !== auth()->id())
+                                    <flux:button wire:click="toggleActive({{ $user->id }})" variant="ghost" size="sm" 
+                                                 :icon="$user->is_active ? 'no-symbol' : 'check-circle'" 
+                                                 :class="$user->is_active ? 'text-red-600' : 'text-emerald-600'" />
+                                @endif
+                            </div>
+                        </flux:table.cell>
+                    </flux:table.row>
+                @empty
+                    <flux:table.row>
+                        <flux:table.cell colspan="5" class="py-12 text-center text-zinc-500">
+                            Tidak ada pengguna yang ditemukan.
+                        </flux:table.cell>
+                    </flux:table.row>
+                @endforelse
+            </flux:table.rows>
+        </flux:table>
+    </div>
+
+    <div class="mt-6">
+        {{ $users->links() }}
+    </div>
+
     {{-- Form Modal --}}
-    @if($showForm)
-    <div class="fixed inset-0 z-50 overflow-y-auto bg-black/50 flex items-center justify-center p-4">
-        <div class="w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-900">
-                    {{ $editingId ? 'Edit Pengguna' : 'Tambah Pengguna Baru' }}
-                </h3>
-                <button wire:click="$set('showForm', false)" class="text-gray-400 hover:text-gray-600">
-                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/>
-                    </svg>
-                </button>
+    <flux:modal wire:model="showForm" class="md:w-[500px]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{ $editingId ? 'Edit Pengguna' : 'Tambah Pengguna Baru' }}</flux:heading>
+                <flux:text>Silakan isi informasi pengguna di bawah ini.</flux:text>
             </div>
 
             <form wire:submit="save" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-sm font-medium text-gray-700">Username <span class="text-red-500">*</span></label>
-                        <input wire:model="name" type="text" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('name') border-red-500 @enderror"/>
-                        @error('name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                    </div>
-                    <div>
-                        <label class="text-sm font-medium text-gray-700">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input wire:model="NamaLengkap" type="text" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('NamaLengkap') border-red-500 @enderror"/>
-                        @error('NamaLengkap')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                    </div>
+                    <flux:input wire:model="name" label="Username" required />
+                    <flux:input wire:model="NamaLengkap" label="Nama Lengkap" required />
                 </div>
 
-                <div>
-                    <label class="text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
-                    <input wire:model="email" type="email" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('email') border-red-500 @enderror"/>
-                    @error('email')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                </div>
+                <flux:input wire:model="email" type="email" label="Email" required />
 
-                <div>
-                    <label class="text-sm font-medium text-gray-700">
-                        Password {{ $editingId ? '(kosongkan jika tidak diubah)' : '' }}
-                        @if(!$editingId)<span class="text-red-500">*</span>@endif
-                    </label>
-                    <input wire:model="password" type="password"
-                           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('password') border-red-500 @enderror"/>
-                    @error('password')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                </div>
+                <flux:input wire:model="password" type="password" 
+                            :label="'Password' . ($editingId ? ' (kosongkan jika tidak diubah)' : '')" 
+                            :required="!$editingId" />
 
-                <div>
-                    <label class="text-sm font-medium text-gray-700">Role <span class="text-red-500">*</span></label>
-                    <select wire:model="role" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="petugas">Petugas</option>
-                        <option value="administrator">Administrator</option>
-                        <option value="peminjam">Peminjam</option>
-                    </select>
-                </div>
+                <flux:select wire:model="role" label="Role" required>
+                    <flux:select.option value="peminjam">Peminjam</flux:select.option>
+                    <flux:select.option value="petugas">Petugas</flux:select.option>
+                    <flux:select.option value="administrator">Administrator</flux:select.option>
+                </flux:select>
 
-                <div>
-                    <label class="text-sm font-medium text-gray-700">Alamat</label>
-                    <textarea wire:model="Alamat" rows="2" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
-                </div>
+                <flux:textarea wire:model="Alamat" label="Alamat" rows="2" />
 
-                <div class="flex gap-3 pt-2">
-                    <button type="button" wire:click="$set('showForm', false)"
-                            class="flex-1 rounded-lg bg-white py-2 text-sm font-semibold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                        Batal
-                    </button>
-                    <button type="submit"
-                            class="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
-                        <div wire:loading wire:target="save" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                        {{ $editingId ? 'Simpan' : 'Tambahkan' }}
-                    </button>
+                <div class="flex gap-3 justify-end pt-4">
+                    <flux:modal.close><flux:button variant="ghost">Batal</flux:button></flux:modal.close>
+                    <flux:button type="submit" variant="primary">
+                        <div wire:loading wire:target="save" class="mr-2">
+                            <flux:icon name="arrow-path" class="size-4 animate-spin" />
+                        </div>
+                        {{ $editingId ? 'Simpan Perubahan' : 'Tambahkan' }}
+                    </flux:button>
                 </div>
             </form>
         </div>
-    </div>
-    @endif
-
-    {{-- Toolbar --}}
-    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div class="flex flex-1 gap-3">
-            <input wire:model.live.debounce.300ms="search" type="text"
-                   placeholder="Cari pengguna..."
-                   class="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"/>
-            <select wire:model.live="roleFilter"
-                    class="rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                <option value="">Semua Role</option>
-                <option value="administrator">Administrator</option>
-                <option value="petugas">Petugas</option>
-                <option value="peminjam">Peminjam</option>
-            </select>
-        </div>
-        <button wire:click="openCreate"
-                class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"/>
-            </svg>
-            Tambah Petugas
-        </button>
-    </div>
-
-    {{-- Table --}}
-    <div class="overflow-hidden rounded-xl bg-white shadow ring-1 ring-gray-200">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Pengguna</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Role</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Status</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">Bergabung</th>
-                    <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @forelse($users as $user)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3">
-                            <p class="text-sm font-medium text-gray-900">{{ $user->NamaLengkap ?? $user->name }}</p>
-                            <p class="text-xs text-gray-500">{{ $user->email }}</p>
-                        </td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium
-                                {{ $user->role === 'administrator' ? 'bg-purple-100 text-purple-700' :
-                                   ($user->role === 'petugas' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700') }}">
-                                {{ ucfirst($user->role) }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium
-                                {{ $user->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                                {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-sm text-gray-500">
-                            {{ $user->created_at->format('d M Y') }}
-                        </td>
-                        <td class="px-4 py-3 text-right">
-                            <div class="flex justify-end gap-2">
-                                <button wire:click="openEdit({{ $user->id }})"
-                                        class="rounded bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-200">
-                                    Edit
-                                </button>
-                                @if($user->id !== auth()->id())
-                                <button wire:click="toggleActive({{ $user->id }})"
-                                        class="rounded px-2 py-1 text-xs font-semibold {{ $user->is_active ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200' }}">
-                                    {{ $user->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
-                                </button>
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="px-4 py-12 text-center text-sm text-gray-500">Tidak ada pengguna.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    <div class="mt-4">{{ $users->links() }}</div>
+    </flux:modal>
 </div>
