@@ -1,9 +1,3 @@
-{{-- resources/views/components/navigation.blade.php --}}
-{{-- atau tambahkan ke layout utama Anda (biasanya resources/views/layouts/app.blade.php atau navigation.blade.php dari Livewire starter kit) --}}
-
-{{-- Tambahkan link-link navigasi berikut ke navbar yang sudah ada dari starter kit Livewire Anda --}}
-
-{{-- Nav links untuk semua user yang login --}}
 <nav class="flex items-center gap-1">
     <a href="{{ route('buku.index') }}"
        class="rounded-lg px-3 py-2 text-sm font-medium {{ request()->routeIs('buku.index') ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">

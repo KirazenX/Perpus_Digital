@@ -73,12 +73,6 @@
                         <p class="text-xs text-gray-500">Tahun Terbit</p>
                         <p class="text-sm font-medium text-gray-900">{{ $buku->TahunTerbit }}</p>
                     </div>
-                    @if($buku->ISBN)
-                    <div>
-                        <p class="text-xs text-gray-500">ISBN</p>
-                        <p class="text-sm font-medium text-gray-900">{{ $buku->ISBN }}</p>
-                    </div>
-                    @endif
                     <div>
                         <p class="text-xs text-gray-500">Stok Tersedia</p>
                         <p class="text-sm font-medium {{ $buku->isAvailable() ? 'text-green-600' : 'text-red-600' }}">

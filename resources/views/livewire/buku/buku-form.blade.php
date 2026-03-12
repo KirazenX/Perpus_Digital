@@ -34,12 +34,6 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">ISBN</label>
-                    <input wire:model="ISBN" type="text" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('ISBN') border-red-500 @enderror"/>
-                    @error('ISBN')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                </div>
-
-                <div>
                     <label class="block text-sm font-medium text-gray-700">Stok Total <span class="text-red-500">*</span></label>
                     <input wire:model="StokTotal" type="number" min="1" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('StokTotal') border-red-500 @enderror"/>
                     @error('StokTotal')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror

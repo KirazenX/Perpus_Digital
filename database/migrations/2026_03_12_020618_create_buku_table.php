@@ -14,7 +14,6 @@ return new class extends Migration
             $table->string('Penulis', 255);
             $table->string('Penerbit', 255);
             $table->integer('TahunTerbit');
-            $table->string('ISBN', 50)->nullable()->unique();
             $table->text('Deskripsi')->nullable();
             $table->string('CoverImage')->nullable();
             $table->integer('StokTotal')->default(1);

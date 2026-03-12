@@ -4,7 +4,7 @@
             <input
                 wire:model.live.debounce.300ms="search"
                 type="text"
-                placeholder="Cari judul, penulis, atau ISBN..."
+                placeholder="Cari judul atau penulis buku..."
                 class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             />
             <select
