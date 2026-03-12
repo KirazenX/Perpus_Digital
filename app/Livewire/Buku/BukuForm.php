@@ -18,7 +18,6 @@ class BukuForm extends Component
     public string $Penulis = '';
     public string $Penerbit = '';
     public string $TahunTerbit = '';
-    public string $ISBN = '';
     public string $Deskripsi = '';
     public $CoverImage = null;
     public int $StokTotal = 1;
@@ -26,16 +25,11 @@ class BukuForm extends Component
 
     protected function rules(): array
     {
-        $isbnRule = $this->isEdit
-            ? 'nullable|string|unique:buku,ISBN,' . $this->buku?->BukuID . ',BukuID'
-            : 'nullable|string|unique:buku,ISBN';
-
         return [
             'Judul' => 'required|string|max:255',
             'Penulis' => 'required|string|max:255',
             'Penerbit' => 'required|string|max:255',
             'TahunTerbit' => 'required|integer|min:1000|max:' . (date('Y') + 1),
-            'ISBN' => $isbnRule,
             'Deskripsi' => 'nullable|string',
             'CoverImage' => 'nullable|image|max:2048',
             'StokTotal' => 'required|integer|min:1',
@@ -49,7 +43,6 @@ class BukuForm extends Component
         'Penerbit.required' => 'Nama penerbit wajib diisi.',
         'TahunTerbit.required' => 'Tahun terbit wajib diisi.',
         'StokTotal.required' => 'Stok buku wajib diisi.',
-        'ISBN.unique' => 'ISBN ini sudah terdaftar.',
         'CoverImage.image' => 'File harus berupa gambar.',
         'CoverImage.max' => 'Ukuran gambar maksimal 2MB.',
     ];
@@ -63,7 +56,6 @@ class BukuForm extends Component
             $this->Penulis = $buku->Penulis;
             $this->Penerbit = $buku->Penerbit;
             $this->TahunTerbit = $buku->TahunTerbit;
-            $this->ISBN = $buku->ISBN ?? '';
             $this->Deskripsi = $buku->Deskripsi ?? '';
             $this->StokTotal = $buku->StokTotal;
             $this->selectedKategori = $buku->kategori->pluck('KategoriID')->toArray();
@@ -84,7 +76,6 @@ class BukuForm extends Component
             'Penulis' => $this->Penulis,
             'Penerbit' => $this->Penerbit,
             'TahunTerbit' => $this->TahunTerbit,
-            'ISBN' => $this->ISBN ?: null,
             'Deskripsi' => $this->Deskripsi,
             'StokTotal' => $this->StokTotal,
         ];

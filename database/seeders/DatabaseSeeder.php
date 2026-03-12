@@ -13,32 +13,32 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name' => 'Administrator',
-            'email' => 'admin@perpustakaan.com',
-            'password' => Hash::make('password'),
+            'name' => 'Azriel',
+            'email' => 'azriel@example.com',
+            'password' => Hash::make('azriel123'),
             'role' => 'administrator',
-            'NamaLengkap' => 'Administrator Perpustakaan',
-            'Alamat' => 'Perpustakaan Digital',
+            'NamaLengkap' => 'Azriel Administrator',
+            'Alamat' => ' Keben',
             'email_verified_at' => now(),
         ]);
 
         User::create([
-            'name' => 'Petugas',
-            'email' => 'petugas@perpustakaan.com',
-            'password' => Hash::make('password'),
+            'name' => 'Dika',
+            'email' => 'dika@example.com',
+            'password' => Hash::make('dika1234'),
             'role' => 'petugas',
-            'NamaLengkap' => 'Petugas Perpustakaan',
-            'Alamat' => 'Perpustakaan Digital',
+            'NamaLengkap' => 'Dika Petugas',
+            'Alamat' => 'Mulyorejo',
             'email_verified_at' => now(),
         ]);
 
         User::create([
-            'name' => 'Peminjam',
-            'email' => 'peminjam@perpustakaan.com',
-            'password' => Hash::make('password'),
+            'name' => 'Farel',
+            'email' => 'farel@example.com',
+            'password' => Hash::make('farel123'),
             'role' => 'peminjam',
-            'NamaLengkap' => 'Budi Santoso',
-            'Alamat' => 'Jl. Contoh No. 1',
+            'NamaLengkap' => 'Farel Trio Saputra',
+            'Alamat' => 'Kebonagung',
             'email_verified_at' => now(),
         ]);
 

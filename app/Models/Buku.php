@@ -17,7 +17,6 @@ class Buku extends Model
         'Penulis',
         'Penerbit',
         'TahunTerbit',
-        'ISBN',
         'Deskripsi',
         'CoverImage',
         'StokTotal',

@@ -44,7 +44,6 @@ class BukuIndex extends Component
             ->when($this->search, fn($q) =>
                 $q->where('Judul', 'like', "%{$this->search}%")
                   ->orWhere('Penulis', 'like', "%{$this->search}%")
-                  ->orWhere('ISBN', 'like', "%{$this->search}%")
             )
             ->when($this->kategoriFilter, fn($q) =>
                 $q->whereHas('kategori', fn($kq) =>
