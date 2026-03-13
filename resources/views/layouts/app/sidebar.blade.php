@@ -20,6 +20,9 @@
                             <flux:sidebar.item icon="clipboard-document-list" :href="route('peminjaman.saya')" :current="request()->routeIs('peminjaman.saya')" wire:navigate>
                                 {{ __('Peminjaman Saya') }}
                             </flux:sidebar.item>
+                            <flux:sidebar.item icon="star" :href="route('koleksi.saya')" :current="request()->routeIs('koleksi.saya')" wire:navigate>
+                                {{ __('Koleksi Saya') }}
+                            </flux:sidebar.item>
                         @endif
 
                         @if(auth()->user()->isStaff())

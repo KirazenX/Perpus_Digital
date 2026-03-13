@@ -13,18 +13,20 @@
         <flux:callout variant="danger" class="mb-6">{{ session('error') }}</flux:callout>
     @endif
 
-    <div class="mb-6 flex flex-col gap-4 sm:flex-row">
-        <flux:input wire:model.live.debounce.300ms="search" icon="magnifying-glass" placeholder="Cari pengguna..." class="flex-1" />
-        <flux:select wire:model.live="roleFilter" placeholder="Semua Role" class="sm:w-64">
-            <flux:select.option value="">Semua Role</flux:select.option>
-            <flux:select.option value="administrator">Administrator</flux:select.option>
-            <flux:select.option value="petugas">Petugas</flux:select.option>
-            <flux:select.option value="peminjam">Peminjam</flux:select.option>
-        </flux:select>
-    </div>
+    <flux:card class="mb-6">
+        <div class="flex flex-col gap-4 sm:flex-row">
+            <flux:input wire:model.live.debounce.300ms="search" icon="magnifying-glass" placeholder="Cari pengguna..." class="flex-1" />
+            <flux:select wire:model.live="roleFilter" placeholder="Semua Role" class="sm:w-64">
+                <flux:select.option value="">Semua Role</flux:select.option>
+                <flux:select.option value="administrator">Administrator</flux:select.option>
+                <flux:select.option value="petugas">Petugas</flux:select.option>
+                <flux:select.option value="peminjam">Peminjam</flux:select.option>
+            </flux:select>
+        </div>
+    </flux:card>
 
-    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
-        <flux:table>
+    <flux:card class="overflow-hidden p-0!">
+        <flux:table container:class="px-3">
             <flux:table.columns>
                 <flux:table.column>Pengguna</flux:table.column>
                 <flux:table.column>Role</flux:table.column>
@@ -78,7 +80,7 @@
                 @endforelse
             </flux:table.rows>
         </flux:table>
-    </div>
+    </flux:card>
 
     <div class="mt-6">
         {{ $users->links() }}

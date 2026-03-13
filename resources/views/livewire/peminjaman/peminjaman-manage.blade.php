@@ -13,18 +13,20 @@
         <flux:callout variant="danger" class="mb-6">{{ session('error') }}</flux:callout>
     @endif
 
-    <div class="mb-6 flex flex-col gap-4 sm:flex-row">
-        <flux:input wire:model.live.debounce.300ms="search" icon="magnifying-glass" placeholder="Cari peminjam atau buku..." class="flex-1" />
-        <flux:select wire:model.live="statusFilter" placeholder="Semua Status" class="sm:w-64">
-            <flux:select.option value="">Semua Status</flux:select.option>
-            @foreach($statusOptions as $status)
-                <flux:select.option value="{{ $status->value }}">{{ $status->label() }}</flux:select.option>
-            @endforeach
-        </flux:select>
-    </div>
+    <flux:card class="mb-6">
+        <div class="flex flex-col gap-4 sm:flex-row">
+            <flux:input wire:model.live.debounce.300ms="search" icon="magnifying-glass" placeholder="Cari peminjam atau buku..." class="flex-1" />
+            <flux:select wire:model.live="statusFilter" placeholder="Semua Status" class="sm:w-64">
+                <flux:select.option value="">Semua Status</flux:select.option>
+                @foreach($statusOptions as $status)
+                    <flux:select.option value="{{ $status->value }}">{{ $status->label() }}</flux:select.option>
+                @endforeach
+            </flux:select>
+        </div>
+    </flux:card>
 
-    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
-        <flux:table>
+    <flux:card class="overflow-hidden p-0!">
+        <flux:table container:class="px-3">
             <flux:table.columns>
                 <flux:table.column>Peminjam</flux:table.column>
                 <flux:table.column>Buku</flux:table.column>
@@ -84,7 +86,7 @@
                 @endforelse
             </flux:table.rows>
         </flux:table>
-    </div>
+    </flux:card>
 
     <div class="mt-6">
         {{ $peminjamanList->links() }}

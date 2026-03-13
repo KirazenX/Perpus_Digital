@@ -5,7 +5,7 @@
     </div>
 
     {{-- Filter --}}
-    <div class="mb-8 rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-sm border border-zinc-200 dark:border-zinc-800">
+    <flux:card class="mb-8">
         <div class="flex flex-wrap gap-6 items-end">
             <div class="flex-1 min-w-[200px]">
                 <flux:field>
@@ -35,7 +35,7 @@
                 </flux:select>
             </div>
         </div>
-    </div>
+    </flux:card>
 
     {{-- Statistik Cards --}}
     <div class="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
@@ -50,20 +50,20 @@
             ];
         @endphp
         @foreach($statCards as $card)
-            <div class="rounded-2xl bg-white dark:bg-zinc-900 p-4 shadow-sm border border-zinc-200 dark:border-zinc-800 text-center flex flex-col items-center">
+            <flux:card class="text-center flex flex-col items-center p-4!">
                 <div class="rounded-full p-2 mb-2 bg-{{ $card['color'] }}-50 dark:bg-{{ $card['color'] }}-950/30 text-{{ $card['color'] }}-600 dark:text-{{ $card['color'] }}-400">
                     <flux:icon name="{{ $card['icon'] }}" class="size-4" />
                 </div>
                 <flux:text size="sm" class="font-bold text-zinc-900 dark:text-zinc-100">{{ $card['value'] }}</flux:text>
                 <flux:text class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider mt-1">{{ $card['label'] }}</flux:text>
-            </div>
+            </flux:card>
         @endforeach
     </div>
 
     {{-- Content based on reportType --}}
-    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
+    <flux:card class="overflow-hidden p-0!">
         @if($reportType === 'peminjaman')
-            <flux:table>
+            <flux:table container:class="px-3">
                 <flux:table.columns>
                     <flux:table.column>Peminjam</flux:table.column>
                     <flux:table.column>Buku</flux:table.column>
@@ -106,7 +106,7 @@
             @endif
 
         @elseif($reportType === 'buku_populer')
-            <flux:table>
+            <flux:table container:class="px-3">
                 <flux:table.columns>
                     <flux:table.column class="w-12">#</flux:table.column>
                     <flux:table.column>Buku</flux:table.column>
@@ -137,7 +137,7 @@
             </flux:table>
 
         @elseif($reportType === 'pengguna_aktif')
-            <flux:table>
+            <flux:table container:class="px-3">
                 <flux:table.columns>
                     <flux:table.column class="w-12">#</flux:table.column>
                     <flux:table.column>Pengguna</flux:table.column>
@@ -170,5 +170,5 @@
                 </flux:table.rows>
             </flux:table>
         @endif
-    </div>
+    </flux:card>
 </div>

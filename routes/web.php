@@ -5,6 +5,7 @@ use App\Livewire\Buku\BukuDetail;
 use App\Livewire\Buku\BukuForm;
 use App\Livewire\Buku\BukuIndex;
 use App\Livewire\Laporan\LaporanPeminjaman;
+use App\Livewire\Peminjaman\KoleksiSaya;
 use App\Livewire\Peminjaman\PeminjamanForm;
 use App\Livewire\Peminjaman\PeminjamanManage;
 use App\Livewire\Peminjaman\PeminjamanSaya;
@@ -34,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:peminjam'])->group(function () {
         Route::get('/pinjam/{buku}', PeminjamanForm::class)->name('peminjaman.create');
         Route::get('/peminjaman-saya', PeminjamanSaya::class)->name('peminjaman.saya');
+        Route::get('/koleksi-saya', KoleksiSaya::class)->name('koleksi.saya');
     });
 
     Route::middleware(['role:administrator,petugas'])->group(function () {
