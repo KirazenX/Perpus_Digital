@@ -6,14 +6,11 @@
     <body class="min-h-screen bg-white dark:bg-zinc-950 antialiased">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
             <flux:sidebar.header>
-                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+                <x-app-logo :sidebar="true" href="{{ route('buku.index') }}" wire:navigate />
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
-                    </flux:sidebar.item>
 
                     @auth
                         @if(auth()->user()->isPeminjam())
@@ -45,12 +42,22 @@
                                 {{ __('Manajemen Pengguna') }}
                             </flux:sidebar.item>
                         @endif
+                    @else
+                        <flux:sidebar.item icon="book-open" :href="route('buku.index')" :current="request()->routeIs('buku.*')" wire:navigate>
+                            {{ __('Katalog Buku') }}
+                        </flux:sidebar.item>
                     @endauth
                 </flux:sidebar.group>
             </flux:sidebar.nav>
             <flux:spacer />
             @auth
                 <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
+            @else
+                <div class="hidden lg:block p-4">
+                    <flux:button href="{{ route('login') }}" variant="primary" class="w-full" wire:navigate>
+                        {{ __('Login') }}
+                    </flux:button>
+                </div>
             @endauth
         </flux:sidebar>
 
@@ -102,22 +109,21 @@
 
                         <form method="POST" action="{{ route('logout') }}" class="w-full">
                             @csrf
-                            <flux:menu.item
-                                as="button"
-                                type="submit"
-                                icon="arrow-right-start-on-rectangle"
-                                class="w-full cursor-pointer"
-                                data-test="logout-button"
-                            >
+                            <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full cursor-pointer">
                                 {{ __('Log out') }}
                             </flux:menu.item>
                         </form>
                     </flux:menu>
                 </flux:dropdown>
+            @else
+                <flux:button href="{{ route('login') }}" variant="primary" size="sm" wire:navigate>
+                    {{ __('Login') }}
+                </flux:button>
             @endauth
         </flux:header>
 
         {{ $slot }}
+
         @fluxScripts
     </body>
 </html>

@@ -7,12 +7,9 @@
         <flux:header container class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden mr-2" icon="bars-2" inset="left" />
 
-            <x-app-logo href="{{ route('dashboard') }}" wire:navigate />
+            <x-app-logo href="{{ route('buku.index') }}" wire:navigate />
 
             <flux:navbar class="-mb-px max-lg:hidden">
-                <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                    {{ __('Dashboard') }}
-                </flux:navbar.item>
                 @auth
                     @if(auth()->user()->isPeminjam())
                         <flux:navbar.item icon="book-open" :href="route('buku.index')" :current="request()->routeIs('buku.*')" wire:navigate>
@@ -37,26 +34,39 @@
                             {{ __('Laporan') }}
                         </flux:navbar.item>
                     @endif
+
+                    @if(auth()->user()->isAdministrator())
+                        <flux:navbar.item icon="users" :href="route('admin.pengguna')" :current="request()->routeIs('admin.*')" wire:navigate>
+                            {{ __('Manajemen Pengguna') }}
+                        </flux:navbar.item>
+                    @endif
+                @else
+                    <flux:navbar.item icon="book-open" :href="route('buku.index')" :current="request()->routeIs('buku.*')" wire:navigate>
+                        {{ __('Katalog Buku') }}
+                    </flux:navbar.item>
                 @endauth
             </flux:navbar>
 
             <flux:spacer />
 
-            <x-desktop-user-menu />
+            @auth
+                <x-desktop-user-menu />
+            @else
+                <flux:button href="{{ route('login') }}" variant="primary" wire:navigate>
+                    {{ __('Login') }}
+                </flux:button>
+            @endauth
         </flux:header>
 
         <!-- Mobile Menu -->
         <flux:sidebar collapsible="mobile" sticky class="lg:hidden border-e border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
             <flux:sidebar.header>
-                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+                <x-app-logo :sidebar="true" href="{{ route('buku.index') }}" wire:navigate />
                 <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2" />
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')">
-                    <flux:sidebar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard')  }}
-                    </flux:sidebar.item>
                     @auth
                         @if(auth()->user()->isPeminjam())
                             <flux:sidebar.item icon="book-open" :href="route('buku.index')" :current="request()->routeIs('buku.*')" wire:navigate>
@@ -87,9 +97,22 @@
                                 {{ __('Manajemen Pengguna') }}
                             </flux:sidebar.item>
                         @endif
+                    @else
+                        <flux:sidebar.item icon="book-open" :href="route('buku.index')" :current="request()->routeIs('buku.*')" wire:navigate>
+                            {{ __('Katalog Buku') }}
+                        </flux:sidebar.item>
                     @endauth
                 </flux:sidebar.group>
             </flux:sidebar.nav>
+
+            @guest
+                <flux:spacer />
+                <div class="p-4">
+                    <flux:button href="{{ route('login') }}" variant="primary" class="w-full" wire:navigate>
+                        {{ __('Login') }}
+                    </flux:button>
+                </div>
+            @endguest
         </flux:sidebar>
 
         {{ $slot }}
