@@ -28,7 +28,7 @@ class BukuIndex extends Component
         $this->resetPage();
     }
 
-    public function sortBy(string $column): void
+    public function sortColumn(string $column): void
     {
         if ($this->sortBy === $column) {
             $this->sortDir = $this->sortDir === 'asc' ? 'desc' : 'asc';
@@ -47,7 +47,7 @@ class BukuIndex extends Component
             )
             ->when($this->kategoriFilter, fn($q) =>
                 $q->whereHas('kategori', fn($kq) =>
-                    $kq->where('kategoribuku.KategoriID', $this->kategoriFilter)
+                    $kq->where('kategoribuku_relasi.KategoriID', $this->kategoriFilter)
                 )
             )
             ->orderBy($this->sortBy, $this->sortDir);
