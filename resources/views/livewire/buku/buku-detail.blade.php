@@ -28,25 +28,25 @@
                 @auth
                     @if(auth()->user()->isPeminjam())
                         @if($buku->isAvailable())
-                            <flux:button href="{{ route('peminjaman.create', $buku->BukuID) }}" variant="primary" size="lg" class="w-full" wire:navigate>
+                            <flux:button href="{{ route('peminjaman.create', $buku->BukuID) }}" variant="primary" size="base" class="w-full" wire:navigate>
                                 Pinjam Buku
                             </flux:button>
                         @else
-                            <flux:button disabled variant="filled" size="lg" class="w-full">
+                            <flux:button disabled variant="filled" size="base" class="w-full">
                                 Stok Habis
                             </flux:button>
                         @endif
                     @endif
                     <flux:button wire:click="toggleKoleksi"
                             variant="{{ $isInKoleksi ? 'filled' : 'outline' }}"
-                            size="lg"
+                            size="base"
                             class="w-full"
                             :icon="$isInKoleksi ? 'star' : 'star'"
                     >
                         {{ $isInKoleksi ? 'Hapus dari Koleksi' : 'Simpan ke Koleksi' }}
                     </flux:button>
                 @else
-                    <flux:button href="{{ route('login') }}" variant="primary" size="lg" class="w-full">
+                    <flux:button href="{{ route('login') }}" variant="primary" size="base" class="w-full">
                         Login untuk Meminjam
                     </flux:button>
                 @endauth

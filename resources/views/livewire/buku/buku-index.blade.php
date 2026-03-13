@@ -81,7 +81,7 @@
 
                         @if(auth()->check() && auth()->user()->isStaff())
                             <div class="mt-4 flex gap-2">
-                                <flux:button href="{{ route('buku.edit', $buku->BukuID) }}" variant="secondary" size="sm" icon="pencil" class="flex-1">
+                                <flux:button href="{{ route('buku.edit', $buku->BukuID) }}" variant="outline" size="sm" icon="pencil" class="flex-1">
                                     Edit
                                 </flux:button>
                             </div>

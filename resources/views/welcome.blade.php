@@ -45,12 +45,12 @@
                     Platform perpustakaan digital modern yang memudahkan Anda meminjam, membaca, dan mengelola koleksi buku favorit kapan saja dan di mana saja.
                 </p>
 
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                    <flux:button href="{{ route('buku.index') }}" variant="primary" size="lg" class="px-8 py-6 text-lg rounded-2xl shadow-xl shadow-indigo-500/25">
-                        Jelajahi Katalog
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <flux:button href="{{ route('buku.index') }}" variant="primary" size="base" class="px-8 py-6 text-lg rounded-2xl shadow-xl shadow-indigo-500/25">
+                        Mulai Jelajah
                     </flux:button>
-                    <flux:button variant="outline" size="lg" class="px-8 py-6 text-lg rounded-2xl">
-                        Pelajari Fitur
+                    <flux:button variant="outline" size="base" class="px-8 py-6 text-lg rounded-2xl">
+                        Pelajari Lebih Lanjut
                     </flux:button>
                 </div>
 

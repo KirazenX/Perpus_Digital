@@ -86,7 +86,7 @@
 
                         <flux:menu.separator />
 
-                        <flux:menu.submenu icon="sun-moon" :label="__('Appearance')">
+                        <flux:menu.submenu icon="swatch" :label="__('Appearance')">
                             <flux:menu.item x-on:click="$flux.appearance = 'light'" icon="sun">
                                 {{ __('Light') }}
                             </flux:menu.item>
